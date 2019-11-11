@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document id="root_doc">
+<Schema name="andes_bolivia" id="andes_bolivia">
+	<SimpleField name="id" type="float"></SimpleField>
+</Schema>
+<Folder><name>andes_bolivia</name>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+      <MultiGeometry><Polygon><outerBoundaryIs><LinearRing><coordinates>-68.5838724063126,-16.1612807222056 -69.3352697273415,-15.3535286020995 -69.5794738566759,-14.2827874196334 -69.0347107989299,-13.7755942279388 -67.9639696164637,-14.2640024866076 -66.8932284339976,-15.4098834011767 -66.0103365817886,-16.7060437799516 -64.8644556672195,-17.3635164358518 -64.4887570067051,-18.4906124173952 -64.4699720736794,-19.4674289347328 -65.3904337919398,-20.0121919924787 -65.91641191666,-19.65527826499 -66.799303768869,-18.3403329531894 -67.7573353531808,-17.2132369716461 -68.5838724063126,-16.1612807222056</coordinates></LinearRing></outerBoundaryIs></Polygon></MultiGeometry>
+  </Placemark>
+</Folder>
+</Document></kml>

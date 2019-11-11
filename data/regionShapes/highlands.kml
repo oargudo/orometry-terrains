@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document id="root_doc">
+<Schema name="highlands" id="highlands">
+	<SimpleField name="id" type="float"></SimpleField>
+</Schema>
+<Folder><name>highlands</name>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+      <MultiGeometry><Polygon><outerBoundaryIs><LinearRing><coordinates>-4.99753312291876,55.7031631064283 -5.41706697419512,55.8138181681365 -6.36101813956693,56.2678694265103 -6.55767463235272,57.0461001548238 -6.68877896087659,57.6613844624503 -5.02375398862353,58.6709227669847 -3.59471680771343,58.7662275327784 -2.83431170227503,58.6368220853537 -3.98802979328502,57.675407866486 -1.7199249098222,57.7594344707252 -1.53637884988879,57.4503818976524 -2.34922568673674,56.5290659878903 -3.12274122502753,56.3914355754033 -4.85331836154251,55.9168131599096 -4.99753312291876,55.7031631064283</coordinates></LinearRing></outerBoundaryIs></Polygon></MultiGeometry>
+  </Placemark>
+</Folder>
+</Document></kml>

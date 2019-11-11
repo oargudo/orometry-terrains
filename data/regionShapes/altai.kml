@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document id="root_doc">
+<Schema name="altai" id="altai">
+	<SimpleField name="id" type="float"></SimpleField>
+</Schema>
+<Folder><name>altai</name>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+      <MultiGeometry><Polygon><outerBoundaryIs><LinearRing><coordinates>82.6876710748877,49.6165103839896 83.4954231949938,51.213229691176 85.8998946222863,51.7016379498448 87.94745232209,51.6640680837933 89.299967499942,51.1193050260474 90.652482677794,50.4430474371214 91.7795786593374,50.0485638435812 91.9674279895946,48.8087582638835 92.3806965161605,47.2120389566971 95.0481570058131,45.728029247665 91.9110731905174,45.934663510948 89.2623976338906,47.3059636218257 85.4114863636175,48.7148335987549 82.6876710748877,49.6165103839896</coordinates></LinearRing></outerBoundaryIs></Polygon></MultiGeometry>
+  </Placemark>
+</Folder>
+</Document></kml>

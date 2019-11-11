@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document id="root_doc">
+<Schema name="rockies" id="rockies">
+	<SimpleField name="id" type="float"></SimpleField>
+</Schema>
+<Folder><name>rockies</name>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+      <MultiGeometry><Polygon><outerBoundaryIs><LinearRing><coordinates>-115.509613486497,47.4656355525442 -117.438199943805,48.5426383793523 -119.116320627436,49.7198275156309 -120.794441311067,52.3998112939673 -121.470698899993,53.8525127812899 -120.919674197905,54.8293292986274 -118.54024934798,53.6270935849812 -116.511476581202,52.6502770676436 -115.234101135453,51.6985071276737 -114.357470927586,50.0454330214101 -113.831492802866,48.9934767719697 -112.654303666587,47.7411479035882 -112.328698160808,46.8895642730887 -114.482703814424,47.1650766241327 -115.509613486497,47.4656355525442</coordinates></LinearRing></outerBoundaryIs></Polygon></MultiGeometry>
+  </Placemark>
+</Folder>
+</Document></kml>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document id="root_doc">
+<Schema name="kilimanjaro" id="kilimanjaro">
+	<SimpleField name="id" type="float"></SimpleField>
+</Schema>
+<Folder><name>kilimanjaro</name>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+      <MultiGeometry><Polygon><outerBoundaryIs><LinearRing><coordinates>38.4336953648413,-5.04842742640573 37.4568788475038,-6.13795354189763 35.8413746072916,-5.78730145875081 34.9772676881084,-4.42226299221498 34.601569027594,-2.19311760649591 34.4512895633882,0.111167511326041 34.801941646535,1.53882242128095 35.4155827920419,2.37788276309655 36.2045499791223,2.55320880466996 37.1563199190922,2.69096498019193 37.9202405288049,1.93956765916303 38.3460323440546,0.436773017105231 38.6716378498338,-1.49181344020228 38.7467775819367,-4.39721641484735 38.4336953648413,-5.04842742640573</coordinates></LinearRing></outerBoundaryIs></Polygon></MultiGeometry>
+  </Placemark>
+</Folder>
+</Document></kml>

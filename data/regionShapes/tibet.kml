@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document id="root_doc">
+<Schema name="tibet" id="tibet">
+	<SimpleField name="id" type="float"></SimpleField>
+</Schema>
+<Folder><name>tibet</name>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+      <MultiGeometry><Polygon><outerBoundaryIs><LinearRing><coordinates>83.8611423598374,29.7592707647153 80.9181695191409,30.5482379517957 79.7660269602299,32.0259860164858 79.3652817223478,33.7041067001171 80.2168653528472,34.7685862382413 83.1473149048599,35.7328794668951 86.0276713021374,36.0459616839904 90.2229730112154,35.3571808063806 93.3788417595368,34.5556903306165 94.8565898242269,33.503734081176 95.4201378149986,32.2388819241107 94.5685541844992,29.6340378778772 90.4108223414726,28.9828268663188 88.018874202864,28.2689994113414 84.3119807524547,29.5463748570905 83.8611423598374,29.7592707647153</coordinates></LinearRing></outerBoundaryIs></Polygon></MultiGeometry>
+  </Placemark>
+</Folder>
+</Document></kml>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document id="root_doc">
+<Schema name="andes_colombia" id="andes_colombia">
+	<SimpleField name="id" type="float"></SimpleField>
+</Schema>
+<Folder><name>andes_colombia</name>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+      <MultiGeometry><Polygon><outerBoundaryIs><LinearRing><coordinates>-76.3326572794231,1.19599739356197 -77.1779792655806,0.782728866996072 -77.7790971224037,1.17721246053624 -77.0464847344005,3.07449069613421 -76.201162748243,5.36625252527235 -76.0133134179858,6.85026223430443 -75.0740667666997,7.86464861769344 -74.1348201154136,8.42819660846511 -73.3270679953075,9.25473366159691 -72.1060473486355,8.40941167543939 -71.5424993578639,7.73315408651338 -72.0121226835069,6.83147730127871 -71.936982951404,6.19278957840414 -72.4629610761243,5.00933879778363 -74.3414543786965,2.88664136587699 -76.3326572794231,1.19599739356197</coordinates></LinearRing></outerBoundaryIs></Polygon></MultiGeometry>
+  </Placemark>
+</Folder>
+</Document></kml>

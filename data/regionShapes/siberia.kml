@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document id="root_doc">
+<Schema name="siberia" id="siberia">
+	<SimpleField name="id" type="float"></SimpleField>
+</Schema>
+<Folder><name>siberia</name>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+      <MultiGeometry><Polygon><outerBoundaryIs><LinearRing><coordinates>143.24422918186,59.4245935400445 138.986311029363,57.971892052722 136.682025911541,59.9255250873971 136.131001209453,62.7808349073069 127.314605976047,64.5841884777763 125.861904488724,66.838380440863 127.91572383287,71.5972301407127 132.374014604308,70.695553355478 140.188546743009,68.5916408565971 144.897303288123,67.7901503808329 150.10699138059,64.534095323041 153.663605366794,62.3800896694249 148.10326519118,59.5748730042503 143.24422918186,59.4245935400445</coordinates></LinearRing></outerBoundaryIs></Polygon></MultiGeometry>
+  </Placemark>
+</Folder>
+</Document></kml>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document id="root_doc">
+<Schema name="karakoram" id="karakoram">
+	<SimpleField name="id" type="float"></SimpleField>
+</Schema>
+<Folder><name>karakoram</name>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+      <MultiGeometry><Polygon><outerBoundaryIs><LinearRing><coordinates>76.2775083562447,35.0292271839732 75.7891000975759,34.9791340292379 74.6244342499811,35.3610943340943 73.8229437742169,35.9684738352593 73.6914492430369,36.4443588052443 73.885560217636,36.8826739091778 74.2863054555181,36.9828602186483 75.5448959682415,37.0266917290417 76.5655439959724,36.8513656874682 77.5235755802842,36.4255738722185 78.2311413909198,35.5927751747448 78.4127290768351,35.0918436273922 78.3313277003903,34.6973600338521 77.7176865548834,34.6159586574073 76.2775083562447,35.0292271839732</coordinates></LinearRing></outerBoundaryIs></Polygon></MultiGeometry>
+  </Placemark>
+</Folder>
+</Document></kml>

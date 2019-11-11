@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document id="root_doc">
+<Schema name="cascades" id="cascades">
+	<SimpleField name="id" type="float"></SimpleField>
+</Schema>
+<Folder><name>cascades</name>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+      <MultiGeometry><Polygon><outerBoundaryIs><LinearRing><coordinates>-123.128268937291,44.0548129089558 -122.813618548834,45.817949894466 -122.053213443396,47.9501869808633 -121.187924875138,48.4047859913887 -120.217752844061,48.4221900948156 -119.588452067147,47.756642529363 -120.794611889566,46.544128679515 -121.214145740843,44.5240456365128 -121.450133532186,43.5248229899585 -121.345250069367,42.3345647663624 -121.423912666481,41.2003094090672 -121.450133532186,40.1062423826676 -122.761176817424,40.2664936099013 -123.390477594339,41.2003094090672 -123.128268937291,44.0548129089558</coordinates></LinearRing></outerBoundaryIs></Polygon></MultiGeometry>
+  </Placemark>
+</Folder>
+</Document></kml>
