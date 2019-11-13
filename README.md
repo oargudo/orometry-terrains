@@ -62,9 +62,9 @@ The erosion post-process on the terrain is not included either, since we used a 
 
 ## Article
 
-The article is published in [ACM Transactions on Graphics](), and can also be read [here](https://hal.archives-ouvertes.fr/hal-02326472/document).
+The article is published in [ACM Transactions on Graphics](https://doi.org/10.1145/3355089.3356535), and can also be read [here](https://hal.archives-ouvertes.fr/hal-02326472/document).
 
-Check also the supplementary material [here]().
+Check also the supplementary material [here](https://dl.acm.org/ft_gateway.cfm?id=3356535&type=zip&path=%2F3360000%2F3356535%2Fsupp%2Fa199%2Dargudo%2Ezip&supp=1&dwn=1).
 
 If you use this code for your research, please cite our paper:
 ```
@@ -80,6 +80,6 @@ If you use this code for your research, please cite our paper:
 
 ## Acknowledgements
 
-* Christian Hill for the [Poison Disc sampling code](https://scipython.com/blog/power-spectra-for-blue-and-uniform-noise/), which I copied into [utils.poisson](./utils/poisson.py).
+* Christian Hill for the [Poisson Disc sampling code](https://scipython.com/blog/power-spectra-for-blue-and-uniform-noise/), which I copied into [utils.poisson](./utils/poisson.py).
 
 * Andrew Kirmse for sharing his result datasets of world prominences and isolations, as well as the to compute these metrics. Check out [his repository](https://github.com/akirmse/mountains).
