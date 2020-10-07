@@ -34,7 +34,7 @@ We provide several *jupyter notebooks* that will serve as a guide on using the c
 
 **PlotHistograms.ipynb**: reads a peaks file CSV and computes the disk statistics for a given (latitude,longitude) pair, then plots the histograms as shown in the paper.
 
-**PlotDivtrees.ipynb**: reads a png DEM files and their Divide Tree in txt format, then plots the peaks, saddles and edges of the tree on top of the DEM for visualization, as shown in the paper and supplementary material.
+**PlotDivtrees.ipynb**: reads png DEM files and their Divide Tree in txt format, then plots the peaks, saddles and edges of the tree on top of the DEM for visualization, as shown in the paper and supplementary material.
 
 
 ## Python environment
@@ -51,11 +51,18 @@ matplotlib, jupyter                   # if you want to use the sample notebooks
 We tested the provided code on a new Python 3.7 environment using Miniconda. All packages were installed using ``conda install`` except ``triangle``, which we had to install with ``pip``. 
 
 
+## Divide Tree from a DEM
+
+Regarding the analysis of a DEM in order to extract its Divide Tree, we edited the source code of [Andrew Kirmse's prominence program](https://github.com/akirmse/mountains) to read DEM of various dimensions and cell sizes instead of the SRTM definitions, as well as adding an export function of the divide tree as a TXT, later used by our code.
+
+You can check out this [release](https://github.com/oargudo/mountains/releases/tag/single-dem_1.0) from my fork of Andrew Kirmse's code, which replicates the necessary modifications that we did during the paper. Note that it is not the exact code we used during our experiments, so there might be some differences.
+
+The input requires as ASCII Grid file. Note that this version of the code already produces a unified output with the prominence and isolation of all the peaks, i.e. no need to merge the two lists later. This functionality has been added recently.
+
+
 ## Remarks, improvements, and to-do
 
 The code we provide here is a cleaned version of our research code and is provided *as is*. It would be nice to have a Divide Tree class encapsulating peaks, saddles and connectivity, as well as the reading/writing functions. Or to provide a library/package to compute the metrics.
-
-Regarding the analysis of a DEM in order to extract its Divide Tree, which we do not include in the repository, we have directly edited the source code of [Andrew Kirmse's prominence program](https://github.com/akirmse/mountains) to read DEM of various dimensions and cell sizes instead of the SRTM definitions, as well as adding an export function of the divide tree as a TXT as used by our code. 
 
 The erosion post-process on the terrain is not included either, since we used a C++ code that heavily depends on some internal libraries of our team. However, good aesthetic results can also be achieved with the erosion tools in other software (e.g. we experimented with Houdini). However, note that these implementations will not apply the compensating uplift that avoids eroding peaks, saddles and ridges to preserve the orometrics.
 
