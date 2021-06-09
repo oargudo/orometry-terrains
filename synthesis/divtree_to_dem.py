@@ -290,14 +290,16 @@ def getRiverSlopeDistance(distTravel):
     return (1 - normDist)
 
 
-def getRiverHeights(riverMaxElev, riverSources, riverFlowTo, riverDrainArea, clippedVertices, bbox, slopeCoeff=0.3, minRiverElev=0):
+def getRiverHeights(riverMaxElev, riverSources, riverFlowTo, riverDrainArea, clippedVertices, bbox, 
+                    slopeCoeff=0.3, minRiverElev=0, srcOffsetMean=50, srcOffsetStd=20):
     # assign valley elevations following the rivers
     riverElevs = riverMaxElev.copy()
 
     # river sources: assign random elevation
     for i,rs in enumerate(riverSources):
         # assign elev
-        riverElevs[rs] = np.maximum(minRiverElev, riverMaxElev[rs] - np.random.normal(50,20))
+        riverElevs[rs] = np.maximum(minRiverElev, 
+                                    riverMaxElev[rs] - np.random.normal(srcOffsetMean,srcOffsetStd))
 
 
     # travel along the flow
@@ -585,18 +587,25 @@ def divideTreeToMesh(peakCoords, peakElevs, saddleCoords, saddleElevs, saddlePea
     numPeaks = peakElevs.size
     numSaddles = saddleElevs.size
     
-    minTerrainElev = reconsParams.get('minTerrainElev', 0)
-    maxSlopeCoeff = reconsParams.get('maxSlopeCoeff', 0.2)
-    refineDistance = reconsParams.get('refineDistance', 0.12)
-    riversPerturbation = reconsParams.get('riversPerturbation', 0.2)
-    ridgesPerturbation = reconsParams.get('ridgesPerturbation', 0.15)
+    minTerrainElev        = reconsParams.get('minTerrainElev', 0)
+    maxSlopeCoeff         = reconsParams.get('maxSlopeCoeff', 0.2)
+    refineDistance        = reconsParams.get('refineDistance', 0.12)
+    riversPerturbation    = reconsParams.get('riversPerturbation', 0.2)
+    ridgesPerturbation    = reconsParams.get('ridgesPerturbation', 0.15)
     useDrainageForValleys = reconsParams.get('useDrainageForValleys', True)
-    maxRiverWidth = reconsParams.get('maxRiverWidth', 0.3)
+    maxRiverWidth         = reconsParams.get('maxRiverWidth', 0.3)
     
-    coarseRiverSmoothIters = reconsParams.get('coarseRiverSmoothIters', 4)
-    refinedRiverSmoothIters = reconsParams.get('refinedRiverSmoothIters', 30)
+    coarseRiverSmoothIters     = reconsParams.get('coarseRiverSmoothIters', 4)
+    refinedRiverSmoothIters    = reconsParams.get('refinedRiverSmoothIters', 30)
     refinedRiverSmoothPosIters = reconsParams.get('refinedRiverSmoothPosIters', 1)
     
+    srcElevRndMean = reconsParams.get('srcElevRndMean', 50)
+    srcElevRndStd  = reconsParams.get('srcElevRndStd', 20)
+    srcElevMomentCoarse = reconsParams.get('momentumCoarseRiverSourceElevs', 0.5)
+    srcElevMoment       = reconsParams.get('momentumRiverSourceElev', 0.75)
+    srcCoordsMoment     = reconsParams.get('momentumRiverSourceCoords', 0.7)
+    
+    print('Reconstructing terrain with %d peaks'%numPeaks)
     
     # output debug data
     debugInfo = {
@@ -638,10 +647,12 @@ def divideTreeToMesh(peakCoords, peakElevs, saddleCoords, saddleElevs, saddlePea
     RiverVertDist = cdist(clippedVertices, clippedVertices, 'euclidean')
     
     riverElevs = getRiverHeights(riverMaxElev, riverSources, riverFlowTo, riverDrainArea, clippedVertices, 
-                                 bbox, slopeCoeff=maxSlopeCoeff, minRiverElev=minTerrainElev) 
+                                 bbox, slopeCoeff=maxSlopeCoeff, minRiverElev=minTerrainElev, 
+                                 srcOffsetMean=srcElevRndMean, srcOffsetStd=srcElevRndStd)
                                  
     riverElevs = smoothRiverElevs(riverElevs, riverMaxElev, RiverVertAdj,  
-                                  smoothIters=coarseRiverSmoothIters, carveOnly=False, sourcesMomentum=0.5)
+                                  smoothIters=coarseRiverSmoothIters, 
+                                  carveOnly=False, sourcesMomentum=srcElevMomentCoarse)
                                   
     riverElevs = propagateRiverFlowElev(riverSources, riverFlowTo, riverElevs)
     
@@ -671,10 +682,10 @@ def divideTreeToMesh(peakCoords, peakElevs, saddleCoords, saddleElevs, saddlePea
 
     # smooth elevations and (optionally) smooth position
     riverElevsSmooth  = smoothRiverElevs(riverElevs, riverElevs, FineRiverAdj, 
-                                         smoothIters=refinedRiverSmoothIters, carveOnly=True, sourcesMomentum=0.75)
+                                         smoothIters=refinedRiverSmoothIters, carveOnly=True, sourcesMomentum=srcElevMoment)
     riverElevsSmooth  = propagateRiverFlowElev(riverSources, riverFlowTo, riverElevsSmooth)
     riverCoordsSmooth = smoothRiverPositions(riverCoords, FineRiverAdj, 
-                                             smoothIters=refinedRiverSmoothPosIters, sourcesMomentum=0.7)
+                                             smoothIters=refinedRiverSmoothPosIters, sourcesMomentum=srcCoordsMoment)
     debugInfo['timings'].append(('Smooth rivers', time.perf_counter() - t0))
     print(debugInfo['timings'][-1])
     
