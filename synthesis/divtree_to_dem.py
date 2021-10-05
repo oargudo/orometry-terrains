@@ -125,6 +125,22 @@ def getClippedVoronoiCells(vor, bbox):
     return polygons, vorclipRegions, vorclipVertices, vorEdgesRegions
 
 
+def getVirtualRidgePoints(pA, pB, maxLength, randomOff):
+    
+    rlen = np.linalg.norm(pB - pA)
+    numParts   = int(rlen/maxLength)
+    partLength = rlen/(numParts + 1)
+    segDir     = (pB - pA)/rlen
+    
+    points = []
+    for i in range(numParts):
+        r = np.random.uniform(-randomOff, randomOff)
+        p = pA + partLength*(i + 1 + r)*segDir
+        points.append([p[0], p[1]])
+    
+    return points
+
+
 ############################
 # RIVER AND RIDGE NETWORKS #
 ############################
@@ -605,6 +621,9 @@ def divideTreeToMesh(peakCoords, peakElevs, saddleCoords, saddleElevs, saddlePea
     srcElevMoment       = reconsParams.get('momentumRiverSourceElev', 0.75)
     srcCoordsMoment     = reconsParams.get('momentumRiverSourceCoords', 0.7)
     
+    virtualRidgePointsDist = reconsParams.get('virtualRidgePointsDist', None)
+    
+    
     print('Reconstructing terrain with %d peaks'%numPeaks)
     
     # output debug data
@@ -622,9 +641,28 @@ def divideTreeToMesh(peakCoords, peakElevs, saddleCoords, saddleElevs, saddlePea
 
     # 1. Compute Voronoi cells of the peak and saddles graph
     
+    # subdivide ridges with "virtual" points for Voronoi. 
+    # This solves the problem of having no rivers when two long peak-saddle ridges
+    # are close together and nearly parallel. Withour virtual points, Voronoi cells of the 
+    # ridge1 peak/saddle might intersect ridge2 and no rivers are created inbetween
+    virtualCentroids = []
+    if virtualRidgePointsDist:
+        for s,[p1,p2] in enumerate(saddlePeaks):
+            vpts = getVirtualRidgePoints(peakCoords[p1], saddleCoords[s], virtualRidgePointsDist, 0.25)
+            for p in vpts:
+                virtualCentroids.append(p)
+            vpts = getVirtualRidgePoints(peakCoords[p2], saddleCoords[s], virtualRidgePointsDist, 0.25)
+            for p in vpts:
+                virtualCentroids.append(p)
+    
+    if len(virtualCentroids) > 0:
+        vorCentroids = np.vstack([peakCoords, saddleCoords, np.array(virtualCentroids)])
+    else:
+        vorCentroids = np.vstack([peakCoords, saddleCoords])
+    
     # voronoi diagram, clip cells which extend to infinity
     t0 = time.perf_counter()
-    vor = Voronoi(np.vstack([peakCoords, saddleCoords]))
+    vor = Voronoi(vorCentroids)
     clippedRegions, clippedVertices, vorEdgesRegions = voronoi_finite_polygons_2d(vor)
     debugInfo['timings'].append(('Voronoi', time.perf_counter() - t0))
     print(debugInfo['timings'][-1])
