@@ -3,8 +3,9 @@ from scipy.stats import norm
 from scipy.spatial import cKDTree, Delaunay
 from scipy.sparse import csr_matrix
 from scipy.sparse.csgraph import minimum_spanning_tree
+from scipy.ndimage import distance_transform_edt, binary_erosion
+from skimage.draw import line
 from skimage.morphology import medial_axis
-import cv2 as cv
 import ot
 import time
 from utils.coords import *
@@ -21,7 +22,7 @@ def computePeakProbability(coords, elev, normCoords, elevDeviation, probMap, ele
     # probability map
     pmapCoords = [(normCoords[:,0]*probMap.shape[0]).astype(int), (normCoords[:,1]*probMap.shape[1]).astype(int)]
     peakProb   = probMap[pmapCoords[0], pmapCoords[1]]
-
+    
     # elevation map term
     if elevMap.size > 0:
         gsigmaElev = elevDeviation
@@ -67,11 +68,13 @@ def generatePeaks(numPeaks, terrainSize, distributions, probMap, elevMap, fixedP
 
     numSamples  = numPeaks
     synthCoords = np.empty((numSamples, 2))
+    
     synthElevs  = sampleFromPDF(numSamples, distributions['elevation']['hist'], distributions['elevation']['bins']) 
 
     hmin        = distributions['elevation']['bins'][:-1][distributions['elevation']['hist'] > 0][0]
     hmax        = distributions['elevation']['bins'][:-1][distributions['elevation']['hist'] > 0][-1]
     elevRange   = hmax - hmin
+    
     
     for pi in range(numSamples):
         
@@ -149,7 +152,7 @@ def createDelaunayGraph(peakCoords, peakElevs, probMap, terrainSize, distributio
     numTris = dtris.simplices.shape[0]
     
     saddleCoords = np.empty((3*numTris, 2))
-    saddlePeaks  = np.empty((3*numTris, 2), dtype=np.int)
+    saddlePeaks  = np.empty((3*numTris, 2), dtype=int)
     saddleWeight = np.empty((3*numTris, 1))
     numSaddles = 0
 
@@ -208,10 +211,10 @@ def generateRidgeTree(peakCoords, peakElevs, saddleCoords, saddlePeaks, saddleWe
  
     # clean saddles to those only in T
     numResSaddles   = numPeaks - 1
-    resSaddleCoords = np.zeros((numResSaddles, 2))                   # coords
-    resSaddlePeaks  = np.full ((numResSaddles, 2), -1, dtype=np.int) # the two peaks on this saddle
-    saddleMaxHeight = np.zeros((numResSaddles, ))                    # maximum possible height (min of both peaks)
-    saddleWidth     = np.zeros((numResSaddles, ))                    # ridge width of the saddle
+    resSaddleCoords = np.zeros((numResSaddles, 2))                 # coords
+    resSaddlePeaks  = np.full ((numResSaddles, 2), -1, dtype=int)  # the two peaks on this saddle
+    saddleMaxHeight = np.zeros((numResSaddles, ))                  # maximum possible height (min of both peaks)
+    saddleWidth     = np.zeros((numResSaddles, ))                  # ridge width of the saddle
 
     RidgeTree   = np.full((numPeaks, numPeaks),   -1)
     saddleRemap = np.full((saddleWeight.size, ), -1)
@@ -252,7 +255,7 @@ def computeCostDominances(peakElevs, peakDoms, peakRangeDom, sampleDoms, peakSad
     peaksByHeight = np.argsort(peakElevs)[::-1] + 1
     highestPeak = peakElevs.argmax()
             
-    C = np.zeros((numPeaks, numSamples), dtype=np.float)
+    C = np.zeros((numPeaks, numSamples), dtype=float)
     for i in range(numPeaks):    
         
         if i == highestPeak:
@@ -344,7 +347,7 @@ def computeCostProminences(peakElevs, peakProms, peakRangeProm, sampleProms,
     peaksByHeight = np.argsort(peakElevs)[::-1] + 1
     highestPeak = peakElevs.argmax()
     
-    C = np.zeros((numPeaks, numSamples), dtype=np.float)
+    C = np.zeros((numPeaks, numSamples), dtype=float)
     for i in range(numPeaks):    
         
         if i == highestPeak:
@@ -427,37 +430,51 @@ def matchProminences(peakElevs, peakProms, peakRangeProm, sampledProms, peakSadd
 ######################
 
 def getRidgesDF(peakCoords, saddleCoords, saddlePeaks, imgSize, terrainSize, ridgesWidth=4, normalized=True):
-    imgRidges = np.ones(imgSize)
-    for i in range(saddleCoords.shape[0]):
-        p1 = (peakCoords[saddlePeaks[i,0]]/terrainSize*imgSize).astype(int)
-        p2 = (peakCoords[saddlePeaks[i,1]]/terrainSize*imgSize).astype(int)
-        ps = (saddleCoords[i]/terrainSize*imgSize).astype(int)
-        # OpenCV inverts x and y!
-        cv.line(imgRidges, (p1[1], p1[0]), (ps[1], ps[0]), color=0, thickness=ridgesWidth)
-        cv.line(imgRidges, (p2[1], p2[0]), (ps[1], ps[0]), color=0, thickness=ridgesWidth)    
-    ridgesDF = cv.distanceTransform(imgRidges.astype(np.uint8), cv.DIST_L2, cv.DIST_MASK_PRECISE)
-    if normalized:
-        cv.normalize(ridgesDF, ridgesDF, 0, 1.0, cv.NORM_MINMAX)
-    return ridgesDF, imgRidges
+    imgRidges_1px = np.ones(imgSize)
     
+    for i in range(saddleCoords.shape[0]):
+        p1 = (peakCoords[saddlePeaks[i,0]] / terrainSize * imgSize).astype(int)
+        p2 = (peakCoords[saddlePeaks[i,1]] / terrainSize * imgSize).astype(int)
+        ps = (saddleCoords[i] / terrainSize * imgSize).astype(int)
+        rr1, cc1 = line(p1[0], p1[1], ps[0], ps[1])
+        rr2, cc2 = line(p2[0], p2[1], ps[0], ps[1])
+        valid1 = (rr1 >= 0) & (rr1 < imgSize[0]) & (cc1 >= 0) & (cc1 < imgSize[1])
+        valid2 = (rr2 >= 0) & (rr2 < imgSize[0]) & (cc2 >= 0) & (cc2 < imgSize[1])
+        imgRidges_1px[rr1[valid1], cc1[valid1]] = 0
+        imgRidges_1px[rr2[valid2], cc2[valid2]] = 0
+        
+    # Create the thick lines
+    dist_1px = distance_transform_edt(imgRidges_1px)
+    imgRidges = (dist_1px >= (ridgesWidth / 2.0)).astype(float)
+    
+    # Calculate the final Distance Field from the thick ridges
+    ridgesDF = distance_transform_edt(imgRidges)
+    
+    if normalized:
+        ridgesDF = (ridgesDF - ridgesDF.min())/(ridgesDF.max() - ridgesDF.min())
+    
+    return ridgesDF, imgRidges
+
 
 def getRiversFromRidges(imgRidges, ridgesWidth=16, riversWidth=4, normalized=True):
-
     b = 32
-    biggerRidges = cv.copyMakeBorder(imgRidges, top=b, bottom=b, left=b, right=b, borderType=cv.BORDER_CONSTANT, value=1)
-    kernel = np.ones((5,5),np.uint8)
-    biggerRidges = cv.erode(biggerRidges, kernel, iterations=ridgesWidth)
+    biggerRidges = np.pad(imgRidges, pad_width=b, mode='constant', constant_values=1)
+    
+    kernel = np.ones((5, 5), dtype=bool)
+    biggerRidges = binary_erosion(biggerRidges, structure=kernel, iterations=ridgesWidth)
 
-    axesMedial = 1 - medial_axis(biggerRidges > 0, return_distance=False)
-    axesMedial = cv.erode(axesMedial.astype(np.uint8), kernel, iterations=riversWidth)
+    axesMedial = 1 - medial_axis(biggerRidges > 0, return_distance=False, rng=1337)
+    axesMedial = binary_erosion(axesMedial, structure=kernel, iterations=riversWidth)
     axesMedial = axesMedial[b:-b, b:-b]
-    riversDF   = cv.distanceTransform(axesMedial.astype(np.uint8), cv.DIST_L2, cv.DIST_MASK_PRECISE)
+    
+    riversDF = distance_transform_edt(axesMedial)
+    
     if normalized:
-        cv.normalize(riversDF, riversDF, 0, 1.0, cv.NORM_MINMAX)
-
+        riversDF = (riversDF - riversDF.min())/(riversDF.max() - riversDF.min())
+    
     return riversDF
-    
-    
+
+
 def smoothstep(x, mi, mx): 
     return (lambda t: np.where(t < 0 , 0, np.where( t <= 1 , 3*t**2-2*t**3, 1 ) ) )( (x-mi)/(mx-mi) )
 
@@ -501,8 +518,7 @@ def synthDivideTree(distributions, distribsPromBin, distribsPromAcc, promGroups,
         distributionsAcc = distribsPromAcc[gi]
         minProm, maxProm = promGroups[gi]
         numPeaks = stepPeaks[gi]
-        print('Prom [%d, %d): %d/%d peaks' % (minProm, maxProm, numPeaks, np.sum(stepPeaks)))        
-
+        print('Prom [%d, %d): %d/%d peaks' % (minProm, maxProm, numPeaks, np.sum(stepPeaks)))
 
         # 1. place peaks   
         t0 = time.perf_counter()
@@ -513,8 +529,7 @@ def synthDivideTree(distributions, distribsPromBin, distribsPromAcc, promGroups,
         peakCoords = np.concatenate([fixedPeaks[:,:2], peakCoords])
         peakElevs  = np.concatenate([fixedPeaks[:,2].squeeze(), peakElevs])
         print('Peaks', '%.2f s'%(time.perf_counter() - t0))
-
-
+        
         # 2. MST
         t0 = time.perf_counter()  
         saddleCoords, saddlePeaks, saddleWeights = createDelaunayGraph(peakCoords, peakElevs, probMapSaddles, 
@@ -523,7 +538,7 @@ def synthDivideTree(distributions, distribsPromBin, distribsPromAcc, promGroups,
         # add for fixed ridges with 0 cost
         saddleCoords = np.vstack([saddleCoords, fixedSaddles[:,:2]])
         saddlePeaks  = np.vstack([saddlePeaks, fixedSaddlesPeaks])
-        saddleWeights = np.vstack([saddleWeights, np.tile([1e-12], (fixedSaddles.shape[0],1))])
+        saddleWeights = np.concatenate([np.ravel(saddleWeights), np.full(fixedSaddles.shape[0], 1e-12)])
 
         # keep the MST for a ridgeline tree (divide tree)
         RidgeTree, saddleCoords, saddlePeaks, saddleMaxElev, saddleWidth = generateRidgeTree(peakCoords, peakElevs, 
@@ -533,13 +548,12 @@ def synthDivideTree(distributions, distribsPromBin, distribsPromAcc, promGroups,
         saddleElevs = saddleMaxElev    
         print('Ridges', '%.2f s'%(time.perf_counter() - t0))
 
-
         # information about this step ranges
         #peakRangeProm = np.vstack([peakRangeProm, np.tile([minProm, maxProm], (numPeaks, 1))])
         peakRangeProm = np.vstack([peakRangeProm, np.tile([0, globalMaxElev], (numPeaks, 1))])
         peakRangeDom  = np.clip(peakRangeProm/peakElevs[:,np.newaxis], 0, 1)
         
-        stepDivtrees.append((peakCoords.copy(), peakElevs.copy(), saddleCoords.copy(), saddlePeaks.copy()))        
+        stepDivtrees.append((peakCoords.copy(), peakElevs.copy(), saddleCoords.copy(), saddlePeaks.copy()))
         stepProbMaps.append(probMap.copy())
         
         if gi < numPromSteps-1:
@@ -561,7 +575,7 @@ def synthDivideTree(distributions, distribsPromBin, distribsPromAcc, promGroups,
             ridgesWidth = (1/valleyFactor)*((3000 - 2000*ti)/dfPixSize).astype(int)  # (3000 to 1000 m) / valleyFactor
             riversWidth = valleyFactor*((1000 - 900*ti)/dfPixSize).astype(int)       # (1000 to  200 m) * valleyFactor
             
-            dfRidges, imgRidges = getRidgesDF(peakCoords, saddleCoords, saddlePeaks, dfShape, terrainSize, ridgesWidth=1, normalized=False)        
+            dfRidges, imgRidges = getRidgesDF(peakCoords, saddleCoords, saddlePeaks, dfShape, terrainSize, ridgesWidth=1, normalized=False)
             dfRivers = getRiversFromRidges(imgRidges, ridgesWidth=1, riversWidth=1, normalized=False)
 
             if updateProbMap:
@@ -571,6 +585,7 @@ def synthDivideTree(distributions, distribsPromBin, distribsPromAcc, promGroups,
 
                 # mask rivers from probability map so we do not place peaks in the valleys
                 probRiver = smoothstep(dfRivers, 0.25*riversWidth, 4*riversWidth)
+                
                 probMap = inputProbMap * probRiver
 
             print('Info propagation step', '%.2f s'%(time.perf_counter() - t0))
@@ -668,7 +683,6 @@ def synthDivideTree(distributions, distribsPromBin, distribsPromAcc, promGroups,
             promAdjustment = np.maximum(0, promEpsilon - peakProms[peakSaddle >= 0])
             saddleElevs[peakSaddle[peakSaddle >= 0]] -= promAdjustment
             peakProms[peakSaddle >= 0] += promAdjustment
-
 
     debugInfo = {
         'stepDivtrees': stepDivtrees,

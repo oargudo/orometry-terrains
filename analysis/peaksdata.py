@@ -9,11 +9,10 @@ def addExtraColumns(df):
     prominence = feet2m(df['prominence in feet'].values)
     saddleElev = elevation - prominence
     dominance  = prominence/elevation
-    isolation  = df['isolation in km'].values
+    isolation  = df['isolation in km'].to_numpy(copy=True)
 
     # the dataset contains 0.1 for all those unknown isolation peaks (< 1km)
     isolation[isolation <= 0.1] = np.random.uniform(0.05, 0.9, size=(isolation[isolation <= 0.1].size))
-    isolation  = isolation
 
     dsLat = deg2km(df['key saddle latitude'].values - df['latitude'].values)
     miLat = 0.5*(df['key saddle latitude'].values + df['latitude'].values)
