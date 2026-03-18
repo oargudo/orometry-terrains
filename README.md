@@ -44,11 +44,11 @@ In order to run our code, you will need the following packages:
 numpy, pandas, scipy, scikit-learn,   # numerical and data libraries
 pyshp, shapely,                       # to process the region shapefiles and have geometric test functions
 noise, pot, triangle,                 # additional utilities: noise, optimal transport and constrained Delaunay
-pillow, scikit-image, opencv,         # image libraries (we could probably do everything with only scikit or opencv?)
+pillow, scikit-image,                 # image libraries
 matplotlib, jupyter                   # if you want to use the sample notebooks
 ```
 
-We tested the provided code on a new Python 3.7 environment using Miniconda. All packages were installed using ``conda install`` except ``triangle``, which we had to install with ``pip``. 
+We tested the provided code on a new Python 3.12 environment using Miniconda. All packages were installed using ``conda install`` except ``triangle``, which we had to install with ``pip``. 
 
 
 ## Divide Tree from a DEM
