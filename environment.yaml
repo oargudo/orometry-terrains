@@ -1,0 +1,19 @@
+name: orometry
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12.13
+  - pip
+  - jupyter=1.1.1
+  - matplotlib=3.10.8
+  - numpy=2.4.2
+  - noise=1.2.2
+  - pandas=3.0.1
+  - pillow=12.1.1
+  - pot=0.9.6.post1
+  - pyshp=3.0.2.post1
+  - scikit-image=0.26.0
+  - scipy=1.17.1
+  - shapely=2.1.2
+  - pip:
+    - triangle==20250106

@@ -39,7 +39,7 @@ We provide several *jupyter notebooks* that will serve as a guide on using the c
 
 ## Python environment
 
-In order to run our code, you will need the following packages:
+You will need the following packages to run the code:
 ```
 numpy, pandas, scipy, scikit-learn,   # numerical and data libraries
 pyshp, shapely,                       # to process the region shapefiles and have geometric test functions
@@ -48,7 +48,9 @@ pillow, scikit-image,                 # image libraries
 matplotlib, jupyter                   # if you want to use the sample notebooks
 ```
 
-We tested the provided code on a new Python 3.12 environment using Miniconda. All packages were installed using ``conda install`` except ``triangle``, which we had to install with ``pip``. 
+The initial project was developed using Python 3.7. We recently tested and updated the code using Python 3.12. Starting from a fresh Miniconda environment, all packages were installed using ``conda install -c conda-forge``, except for ``triangle``, which was installed with ``pip``. 
+
+You can also create the environment using the provided YAML file with: ``conda env create -f environment.yml``.
 
 
 ## Divide Tree from a DEM
